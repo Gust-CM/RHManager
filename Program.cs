@@ -1,4 +1,11 @@
+using Microsoft.EntityFrameworkCore;
+using RHManager.Models;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Agregar EF Core con SQL Server
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
