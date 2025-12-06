@@ -1,0 +1,49 @@
+﻿@model IEnumerable<RHManager.Models.LeaveRequest>
+
+@{
+    ViewData["Title"] = "Solicitudes de Permiso";
+}
+
+<h2 class="fw-bold mb-4">
+    <i class="bi bi-calendar-check me-2"></i>Solicitudes de Permiso
+</h2>
+
+<div class="text-end mb-3">
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i> Nueva Solicitud
+    </a>
+</div>
+
+<table class="table table-custom">
+    <thead>
+        <tr>
+            <th>Empleado</th>
+            <th>Inicio</th>
+            <th>Fin</th>
+            <th>Estado</th>
+            <th class="text-end">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@($"{r.Employee?.FirstName} {r.Employee?.LastName}")</td>
+                <td>@r.StartDate.ToShortDateString()</td>
+                <td>@r.EndDate.ToShortDateString()</td>
+                <td>@((LeaveStatus)r.Status)</td>
+                <td class="text-end">
+                    <a asp-action="Edit" asp-route-id="@r.LeaveRequestId" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-pencil-fill"></i>
+                    </a>
+                    <a asp-action="Details" asp-route-id="@r.LeaveRequestId" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-eye-fill"></i>
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@r.LeaveRequestId" class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-trash-fill"></i>
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

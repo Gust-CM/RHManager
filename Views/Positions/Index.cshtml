@@ -1,0 +1,44 @@
+﻿@model IEnumerable<RHManager.Models.Position>
+@{
+    ViewData["Title"] = "Puestos";
+}
+
+<h2 class="fw-bold mb-4">
+    <i class="bi bi-briefcase me-2"></i>Puestos
+</h2>
+
+<div class="text-end mb-3">
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i> Nuevo Puesto
+    </a>
+</div>
+
+<table class="table table-custom">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Departamento</th>
+            <th class="text-end">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.Name</td>
+                <td>@p.Department?.Name</td>
+                <td class="text-end">
+                    <a asp-action="Edit" asp-route-id="@p.PositionId" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-pencil-fill"></i>
+                    </a>
+                    <a asp-action="Details" asp-route-id="@p.PositionId" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-eye-fill"></i>
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@p.PositionId" class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-trash-fill"></i>
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

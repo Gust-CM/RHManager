@@ -1,0 +1,43 @@
+﻿@model RHManager.Models.LeaveRequest
+
+<div class="card card-custom">
+
+    <h3 class="fw-bold mb-3">
+        <i class="bi bi-info-circle me-2"></i>Detalles de Solicitud
+    </h3>
+
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item d-flex justify-content-between">
+            <strong>Empleado</strong>
+            <span>@($"{Model.Employee?.FirstName} {Model.Employee?.LastName}")</span>
+        </li>
+
+        <li class="list-group-item d-flex justify-content-between">
+            <strong>Inicio</strong>
+            <span>@Model.StartDate.ToShortDateString()</span>
+        </li>
+
+        <li class="list-group-item d-flex justify-content-between">
+            <strong>Fin</strong>
+            <span>@Model.EndDate.ToShortDateString()</span>
+        </li>
+
+        <li class="list-group-item d-flex justify-content-between">
+            <strong>Razón</strong>
+            <span>@Model.Reason</span>
+        </li>
+
+        <li class="list-group-item d-flex justify-content-between">
+            <strong>Estado</strong>
+            <span>@((LeaveStatus)Model.Status)</span>
+        </li>
+    </ul>
+
+    <div class="text-end mt-4">
+        <a asp-action="Edit" asp-route-id="@Model.LeaveRequestId" class="btn btn-primary">
+            <i class="bi bi-pencil"></i> Editar
+        </a>
+        <a asp-action="Index" class="btn btn-secondary">Volver</a>
+    </div>
+
+</div>

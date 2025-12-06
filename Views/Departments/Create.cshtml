@@ -1,0 +1,25 @@
+﻿@model RHManager.Models.Department
+@{
+    ViewData["Title"] = "Crear Departamento";
+}
+
+<h2 class="fw-bold mb-4">
+    <i class="bi bi-plus-circle me-2"></i>Nuevo Departamento
+</h2>
+
+<form asp-action="Create" class="card p-4 card-custom">
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="text-end mt-3">
+        <button class="btn btn-primary">
+            <i class="bi bi-save me-1"></i>Guardar
+        </button>
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </div>
+
+</form>

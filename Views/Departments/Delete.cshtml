@@ -1,0 +1,27 @@
+﻿@model RHManager.Models.Department
+@{
+    ViewData["Title"] = "Eliminar";
+}
+
+<div class="card card-custom p-4">
+    <h3 class="fw-bold text-danger mb-3">
+        <i class="bi bi-trash-fill me-2"></i>Eliminar Departamento
+    </h3>
+
+    <p class="text-muted">¿Seguro que deseas eliminar este departamento?</p>
+
+    <ul class="list-group list-group-flush mb-3">
+        <li class="list-group-item d-flex justify-content-between">
+            <strong>Nombre</strong>
+            <span>@Model.Name</span>
+        </li>
+    </ul>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="DepartmentId" />
+        <button class="btn btn-danger">
+            <i class="bi bi-trash"></i> Eliminar
+        </button>
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>

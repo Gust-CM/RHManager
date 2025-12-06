@@ -1,31 +1,262 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
+﻿/* ============================================================
+   🎨 ESTILOS GENERALES
+   ============================================================ */
 body {
-  margin-bottom: 60px;
+    background: #f5f7fa;
+    font-family: "Segoe UI", Roboto, sans-serif;
+    transition: background 0.3s ease-in-out;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+* {
+    transition: all 0.22s ease-in-out;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+/* Espaciado cuando existe sidebar */
+.content-wrapper {
+    margin-left: 220px;
+    padding: 20px;
 }
+
+/* Sidebar fijo */
+.sidebar {
+    position: fixed;
+    width: 220px;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+
+
+/* ============================================================
+   🧩 TARJETAS GENERALES (Cards)
+   ============================================================ */
+
+.card-custom {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 25px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.05);
+}
+
+.card {
+    border-radius: 12px !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    opacity: 0;
+    transform: translateY(6px);
+    animation: fadeUp 0.45s forwards;
+}
+
+/* Animación de entrada */
+@keyframes fadeUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Hover profesional */
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.12);
+}
+
+.card-body {
+    padding: 1rem !important;
+}
+
+.card-header {
+    background: #ffffff;
+    padding: 0.75rem 1rem !important;
+    border-bottom: 1px solid #e5e7eb !important;
+}
+
+
+
+/* ============================================================
+   🔢 KPI CARDS (Tarjetas de indicadores)
+   ============================================================ */
+
+.kpi {
+    border-left: 5px solid #2563eb;
+    border-radius: 12px;
+    transition: .18s ease-in-out;
+    cursor: default;
+}
+
+    .kpi h2 {
+        font-size: 1.9rem;
+    }
+
+    .kpi:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 18px rgba(15,23,42,0.12);
+    }
+
+/* Variantes */
+.kpi-green {
+    border-left-color: #16a34a;
+}
+
+.kpi-blue {
+    border-left-color: #0ea5e9;
+}
+
+.kpi-orange {
+    border-left-color: #f97316;
+}
+
+.kpi-purple {
+    border-left-color: #8b5cf6;
+}
+
+.kpi-gray {
+    border-left-color: #6b7280;
+}
+
+
+
+/* ============================================================
+   📊 TABLAS
+   ============================================================ */
+
+.table-custom {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+    .table-custom th {
+        background: #edf2f7;
+        font-weight: 600;
+        color: #2d3748;
+    }
+
+    .table-custom td {
+        vertical-align: middle;
+    }
+
+    .table-custom tbody tr:hover {
+        background: #f7fafc;
+        transform: scale(1.005);
+    }
+
+
+
+/* ============================================================
+   🔘 BOTONES CON EFECTOS
+   ============================================================ */
+
+.btn {
+    border-radius: 8px;
+    padding: 0.45rem 1.1rem;
+    font-weight: 500;
+}
+
+/* Primario */
+.btn-primary {
+    background-color: #2563eb;
+    border-color: #2563eb;
+}
+
+    .btn-primary:hover {
+        background-color: #1e40af;
+        box-shadow: 0 4px 14px rgba(37,99,235,0.45);
+    }
+
+/* Secundario */
+.btn-secondary {
+    background-color: #718096;
+    border-color: #718096;
+}
+
+    .btn-secondary:hover {
+        background-color: #4a5568;
+    }
+
+/* Outline */
+.btn-outline-primary:hover {
+    background-color: #2563eb;
+    color: white;
+}
+
+.btn-outline-danger:hover {
+    background-color: #c53030;
+    color: white;
+}
+
+/* Efecto ripple */
+.ripple {
+    position: relative;
+    overflow: hidden;
+}
+
+    .ripple::after {
+        content: "";
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        background: rgba(255,255,255,0.35);
+        border-radius: 50%;
+        opacity: 0;
+        transform: scale(0);
+        transition: transform .45s, opacity .6s;
+    }
+
+    .ripple:active::after {
+        opacity: 1;
+        transform: scale(2.4);
+    }
+
+
+
+/* ============================================================
+   📈 GRÁFICOS (Chart.js)
+   ============================================================ */
+
+canvas {
+    max-height: 150px !important;
+}
+
+.chart-wrapper {
+    padding: 0 !important;
+}
+
+
+
+/* ============================================================
+   🎛 ICONOS DE ACCIONES
+   ============================================================ */
+
+.action-icon {
+    font-size: 18px;
+    transition: 0.2s;
+}
+
+    .action-icon:hover {
+        transform: scale(1.25);
+        color: #2563eb;
+    }
+
+
+
+/* ============================================================
+   🖼 TITULOS
+   ============================================================ */
+
+h2, h3 {
+    color: #1a202c;
+    font-weight: 600;
+}
+
+.btn-animated {
+    transition: all 0.25s ease;
+    border-radius: 8px;
+}
+
+    .btn-animated:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }

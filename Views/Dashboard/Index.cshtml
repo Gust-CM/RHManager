@@ -1,0 +1,295 @@
+﻿@model RHManager.Models.ViewModels.DashboardViewModel
+@using System.Text.Json
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<!-- ENCABEZADO -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h2 class="mb-0 fw-semibold">Panel de Recursos Humanos</h2>
+        <small class="text-muted">
+            Resumen ejecutivo del estado de la organización · @DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+        </small>
+    </div>
+
+    <span class="badge bg-primary-subtle text-primary border border-primary rounded-pill px-3 py-2">
+        <i class="bi bi-person-workspace me-1"></i> RHManager · Módulo Analítico
+    </span>
+</div>
+
+<!-- =================== KPIs PRINCIPALES =================== -->
+<div class="row g-3 mb-3">
+    <div class="col-md-3">
+        <div class="card shadow-sm kpi-card">
+            <div class="card-body">
+                <small class="text-muted">Empleados activos</small>
+                <h2 class="fw-bold">@Model.ActiveEmployees</h2>
+                <span class="text-primary small">
+                    <i class="bi bi-people-fill me-1"></i> de @Model.TotalEmployees registrados
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm kpi-card">
+            <div class="card-body">
+                <small class="text-muted">Permisos pendientes</small>
+                <h2 class="fw-bold">@Model.PendingLeaves</h2>
+                <span class="text-warning small">
+                    <i class="bi bi-clock-history me-1"></i> En espera de aprobación
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm kpi-card">
+            <div class="card-body">
+                <small class="text-muted">Puestos definidos</small>
+                <h2 class="fw-bold">@Model.TotalPositions</h2>
+                <span class="text-secondary small">
+                    <i class="bi bi-briefcase-fill me-1"></i> Estructura organizacional
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm kpi-card">
+            <div class="card-body">
+                <small class="text-muted">Rotación estimada</small>
+                <h2 class="fw-bold">@Model.TurnoverRate.ToString("0.0")%</h2>
+                <span class="text-secondary small">
+                    <i class="bi bi-arrow-repeat me-1"></i> Inactivos / totales
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =================== KPIs AVANZADOS =================== -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm kpi-card">
+            <div class="card-body">
+                <small class="text-muted">Promedio días aprobados</small>
+                <h2 class="fw-bold">@Model.AvgLeaveDays.ToString("0.0")</h2>
+                <span class="text-secondary small">
+                    <i class="bi bi-calendar-check me-1"></i> Días promedio de ausencia
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm kpi-card">
+            <div class="card-body">
+                <small class="text-muted">Crecimiento de contrataciones</small>
+                <h2 class="fw-bold">@Model.MonthlyGrowthRate.ToString("0.0")%</h2>
+                <span class="@(Model.MonthlyGrowthRate >= 0 ? "text-success" : "text-danger") small">
+                    <i class="bi @(Model.MonthlyGrowthRate >= 0 ? "bi-graph-up-arrow" : "bi-graph-down-arrow") me-1"></i>
+                    @(Model.MonthlyGrowthRate >= 0 ? "Mayor que el mes anterior" : "Menor que el mes anterior")
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm kpi-card">
+            <div class="card-body">
+                <small class="text-muted">Resumen general</small>
+                <h2 class="fw-bold">@(Model.TotalEmployees == 0 ? "Sin datos" : "Operación estable")</h2>
+                <span class="text-secondary small">
+                    <i class="bi bi-info-circle me-1"></i> Métricas claves de RRHH
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =================== FILA GRÁFICOS =================== -->
+<div class="row g-3 mb-4">
+    <div class="col-lg-5">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white fw-bold small">Permisos por mes</div>
+            <div class="card-body pb-1">
+                <canvas id="chartLeaves" height="60"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white fw-bold small">Distribución por departamento</div>
+            <div class="card-body pb-1">
+                <canvas id="chartDepts" height="60"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-lg-5">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white fw-bold small">Distribución por puesto</div>
+            <div class="card-body pb-1">
+                <canvas id="chartPositions" height="60"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white fw-bold small">Últimos empleados contratados</div>
+            <div class="card-body">
+                @if (!Model.LatestEmployees.Any())
+                {
+                    <div class="text-muted small">No hay empleados registrados.</div>
+                }
+                else
+                {
+                    <ul class="list-group list-group-flush small">
+                        @foreach (var e in Model.LatestEmployees)
+                        {
+                            <li class="list-group-item d-flex justify-content-between">
+                                <div>
+                                    <strong>@e.FirstName @e.LastName</strong><br />
+                                    <small class="text-muted">@e.Email</small>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-light text-secondary">@e.HireDate.ToString("dd/MM/yyyy")</span><br />
+                                    <span class="badge @(e.IsActive ? "bg-success" : "bg-secondary") mt-1">
+                                        @(e.IsActive ? "Activo" : "Inactivo")
+                                    </span>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =================== ÚLTIMOS PERMISOS =================== -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white fw-bold small">Últimos permisos solicitados</div>
+    <div class="card-body">
+        @if (!Model.RecentLeaveRequests.Any())
+        {
+            <div class="text-muted small">No hay solicitudes recientes.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-sm table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Empleado</th>
+                            <th>Rango</th>
+                            <th>Días</th>
+                            <th>Estado</th>
+                            <th>Motivo</th>
+                        </tr>
+                    </thead>
+                    <tbody class="small">
+                        @foreach (var r in Model.RecentLeaveRequests)
+                        {
+                            var days = (r.EndDate - r.StartDate).TotalDays + 1;
+                            <tr>
+                                <td>@($"{r.Employee?.FirstName} {r.Employee?.LastName}")</td>
+                                <td>@r.StartDate.ToString("dd/MM") - @r.EndDate.ToString("dd/MM")</td>
+                                <td>@days</td>
+                                <td>
+                                    <span class="badge
+                                                @(r.Status == 0 ? "bg-warning text-dark" :
+                                                                                    r.Status == 1 ? "bg-success" :
+                                                                                    "bg-danger")">
+                                @(r.Status == 0 ? "Pendiente" : r.Status == 1 ? "Aprobado" : "Rechazado")
+                            </span>
+                        </td>
+                        <td class="text-truncate" style="max-width:350px">@r.Reason</td>
+                    </tr>
+                                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const leavesLabels = @Html.Raw(JsonSerializer.Serialize(Model.ChartLabels));
+        const leavesValues = @Html.Raw(JsonSerializer.Serialize(Model.ChartValues));
+
+        const deptLabels = @Html.Raw(JsonSerializer.Serialize(Model.DeptLabels));
+        const deptValues = @Html.Raw(JsonSerializer.Serialize(Model.DeptEmployees));
+
+        const positionLabels = @Html.Raw(JsonSerializer.Serialize(Model.PositionLabels));
+        const positionValues = @Html.Raw(JsonSerializer.Serialize(Model.PositionEmployees));
+
+        /* ---------- GRAFICO 1: Permisos por mes (linea fina) ---------- */
+        new Chart(document.getElementById('chartLeaves'), {
+            type: 'line',
+            data: {
+                labels: leavesLabels,
+                datasets: [{
+                    data: leavesValues,
+                    borderColor: '#2563eb',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.35,
+                    backgroundColor: 'rgba(37, 99, 235, 0.15)'
+                }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        /* ---------- GRAFICO 2: Departamentos ---------- */
+        new Chart(document.getElementById('chartDepts'), {
+            type: 'bar',
+            data: {
+                labels: deptLabels,
+                datasets: [{
+                    data: deptValues,
+                    backgroundColor: '#16a34a',
+                    barThickness: 28
+                }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        /* ---------- GRAFICO 3: Puestos (donut compacto) ---------- */
+        new Chart(document.getElementById('chartPositions'), {
+            type: 'doughnut',
+            data: {
+                labels: positionLabels,
+                datasets: [{
+                    data: positionValues,
+                    backgroundColor: ['#0ea5e9','#22c55e','#6366f1','#f97316','#e11d48','#14b8a6','#a855f7']
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    </script>
+}
