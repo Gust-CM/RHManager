@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RHManager.Models;
@@ -18,9 +19,30 @@ namespace RHManager.Controllers
         }
 
         // GET: Employees
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string search, bool? isActive)
         {
             var employees = await _employeeService.GetAllAsync();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var searchLower = search.ToLower();
+
+                employees = employees.Where(e =>
+                    ($"{e.FirstName} {e.LastName}").ToLower().Contains(searchLower) ||
+                    e.Email.ToLower().Contains(searchLower)
+                ).ToList();
+            }
+
+            if (isActive.HasValue)
+            {
+                employees = employees
+                    .Where(e => e.IsActive == isActive.Value)
+                    .ToList();
+            }
+
+            ViewData["Search"] = search;
+            ViewData["IsActive"] = isActive;
+
             return View(employees);
         }
 
