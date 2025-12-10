@@ -8,6 +8,56 @@
     <i class="bi bi-calendar-check me-2"></i>Solicitudes de Permiso
 </h2>
 
+<!-- FILTROS -->
+<form method="get" class="row g-2 mb-4">
+    <div class="col-md-3">
+        <input type="text"
+               name="search"
+               value="@ViewData["Search"]"
+               class="form-control"
+               placeholder="Buscar por empleado" />
+    </div>
+
+    <div class="col-md-2">
+        <input type="date"
+               name="startDate"
+               value="@ViewData["StartDate"]"
+               class="form-control"
+               placeholder="Fecha inicio" />
+    </div>
+
+    <div class="col-md-2">
+        <input type="date"
+               name="endDate"
+               value="@ViewData["EndDate"]"
+               class="form-control"
+               placeholder="Fecha fin" />
+    </div>
+
+    <div class="col-md-2">
+        <select name="status" class="form-select">
+            <option value="">Todos</option>
+            @foreach (LeaveStatus s in Enum.GetValues(typeof(LeaveStatus)))
+            {
+                var intValue = (int)s;
+                <option value="@intValue" selected="@(ViewData["Status"]?.ToString() == intValue.ToString())">
+                    @s
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <button type="submit" class="btn btn-outline-primary">
+            <i class="bi bi-search me-1"></i> Buscar
+        </button>
+
+        <a asp-action="Index" class="btn btn-outline-secondary ms-2">
+            Limpiar
+        </a>
+    </div>
+</form>
+
 <div class="text-end mb-3">
     <a asp-action="Create" class="btn btn-primary">
         <i class="bi bi-plus-circle me-1"></i> Nueva Solicitud
@@ -28,10 +78,23 @@
         @foreach (var r in Model)
         {
             <tr>
-                <td>@($"{r.Employee?.FirstName} {r.Employee?.LastName}")</td>
+                <td>@($"{r.Employee?.FirstName ?? ""} {r.Employee?.LastName ?? ""}")</td>
                 <td>@r.StartDate.ToShortDateString()</td>
                 <td>@r.EndDate.ToShortDateString()</td>
-                <td>@((LeaveStatus)r.Status)</td>
+                <td>
+                    @switch ((LeaveStatus)r.Status)
+                    {
+                        case LeaveStatus.Pending:
+                            <span class="badge bg-warning text-dark">Pendiente</span>
+                            break;
+                        case LeaveStatus.Approved:
+                            <span class="badge bg-success">Aprobado</span>
+                            break;
+                        case LeaveStatus.Rejected:
+                            <span class="badge bg-danger">Rechazado</span>
+                            break;
+                    }
+                </td>
                 <td class="text-end">
                     <a asp-action="Edit" asp-route-id="@r.LeaveRequestId" class="btn btn-sm btn-outline-primary">
                         <i class="bi bi-pencil-fill"></i>

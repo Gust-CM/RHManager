@@ -15,11 +15,43 @@ namespace RHManager.Controllers
         }
 
         // GET: LeaveRequests
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string search, DateTime? startDate, DateTime? endDate, LeaveStatus? status)
         {
             var list = await _context.LeaveRequests
                 .Include(l => l.Employee)
                 .ToListAsync();
+
+            // Filtrar por nombre de empleado
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var searchLower = search.ToLower();
+                list = list.Where(l =>
+                    ($"{l.Employee?.FirstName ?? ""} {l.Employee?.LastName ?? ""}").ToLower().Contains(searchLower)
+                ).ToList();
+            }
+
+            // Filtrar por fecha de inicio
+            if (startDate.HasValue)
+            {
+                list = list.Where(l => l.StartDate >= startDate.Value).ToList();
+            }
+
+            // Filtrar por fecha de fin
+            if (endDate.HasValue)
+            {
+                list = list.Where(l => l.EndDate <= endDate.Value).ToList();
+            }
+
+            // Filtrar por estado
+            if (status.HasValue)
+            {
+                list = list.Where(l => l.Status == (int)status.Value).ToList();
+            }
+
+            ViewData["Search"] = search;
+            ViewData["StartDate"] = startDate?.ToString("yyyy-MM-dd");
+            ViewData["EndDate"] = endDate?.ToString("yyyy-MM-dd");
+            ViewData["Status"] = status;
 
             return View(list);
         }
@@ -116,9 +148,7 @@ namespace RHManager.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // -----------------------------
         // Helper privado
-        // -----------------------------
         private void LoadEmployeesDropdown(int? selectedEmployeeId = null)
         {
             var employees = _context.Employees
@@ -132,6 +162,5 @@ namespace RHManager.Controllers
 
             ViewBag.EmployeeId = new SelectList(employees, "EmployeeId", "FullName", selectedEmployeeId);
         }
-
     }
 }
