@@ -27,5 +27,6 @@ namespace RHManager.Models
         public int PositionId { get; set; }
 
         public Position? Position { get; set; }
+
     }
 }

@@ -1,11 +1,16 @@
 ﻿@model IEnumerable<RHManager.Models.Employee>
+@using System.Linq
+
 @{
     ViewData["Title"] = "Empleados";
 }
 
-<h2 class="fw-bold mb-4">
+<h2 class="fw-bold mb-1">
     <i class="bi bi-people me-2"></i>Empleados
 </h2>
+<p class="text-muted mb-4">
+    Gestión de los empleados registrados en la organización.
+</p>
 
 <div class="text-end mb-3">
     <a asp-action="Create" class="btn btn-primary">
@@ -13,45 +18,106 @@
     </a>
 </div>
 
-<table class="table table-custom">
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Email</th>
-            <th>Puesto</th>
-            <th>Estado</th>
-            <th class="text-end">Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var e in Model)
-        {
+@if (!Model.Any())
+{
+    <div class="alert alert-info mt-3">
+        No hay empleados registrados todavía.
+        <a asp-action="Create" class="btn btn-sm btn-primary ms-2">
+            <i class="bi bi-plus-circle me-1"></i> Registrar primer empleado
+        </a>
+    </div>
+}
+else
+{
+    <table class="table table-custom">
+        <thead>
             <tr>
-                <td>@($"{e.FirstName} {e.LastName}")</td>
-                <td>@e.Email</td>
-                <td>@e.Position?.Name</td>
-                <td>
-                    @if (e.IsActive)
-                    {
-                        <span class="badge bg-success">Activo</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-danger">Inactivo</span>
-                    }
-                </td>
-                <td class="text-end">
-                    <a asp-action="Edit" asp-route-id="@e.EmployeeId" class="btn btn-sm btn-outline-primary">
-                        <i class="bi bi-pencil-fill"></i>
-                    </a>
-                    <a asp-action="Details" asp-route-id="@e.EmployeeId" class="btn btn-sm btn-outline-secondary">
-                        <i class="bi bi-eye-fill"></i>
-                    </a>
-                    <a asp-action="Delete" asp-route-id="@e.EmployeeId" class="btn btn-sm btn-outline-danger">
-                        <i class="bi bi-trash-fill"></i>
-                    </a>
-                </td>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Puesto</th>
+                <th>Antigüedad</th> @* NUEVO *@
+                <th>Estado</th>
+                <th class="text-end">Acciones</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var e in Model)
+            {
+                <tr>
+                    <!-- Nombre con avatar inicial -->
+                    <td>
+                        <div class="d-flex align-items-center">
+                            @{
+                                var initial = !string.IsNullOrEmpty(e.FirstName)
+                                ? e.FirstName[0].ToString().ToUpper()
+                                : "?";
+                            }
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2"
+                                 style="width:36px; height:36px; font-size:18px;">
+                                @initial
+                            </div>
+                            <span>@($"{e.FirstName} {e.LastName}")</span>
+                        </div>
+                    </td>
+
+                    <td>
+                        <a href="mailto:@e.Email">@e.Email</a>
+                    </td>
+
+                    <td>
+                        <span class="badge bg-info">@e.Position?.Name</span>
+                    </td>
+
+                    <!-- Antigüedad con color según años -->
+                    <td>
+                        @{
+                            var years = DateTime.Now.Year - e.HireDate.Year;
+                            if (e.HireDate.Date > DateTime.Now.AddYears(-years))
+                            {
+                                years--;
+                            }
+
+                            string antiguedadClass;
+                            if (years >= 5)
+                            {
+                                antiguedadClass = "text-success fw-bold";   // muchos años
+                            }
+                            else if (years >= 1)
+                            {
+                                antiguedadClass = "text-primary fw-bold";   // normal
+                            }
+                            else
+                            {
+                                antiguedadClass = "text-warning fw-bold";   // nuevo
+                            }
+                        }
+                        <span class="@antiguedadClass">@years años</span>
+                    </td>
+
+                    <td>
+                        @if (e.IsActive)
+                        {
+                            <span class="badge bg-success">Activo</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Inactivo</span>
+                        }
+                    </td>
+
+                    <td class="text-end">
+                        <a asp-action="Edit" asp-route-id="@e.EmployeeId" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-pencil-fill"></i>
+                        </a>
+                        <a asp-action="Details" asp-route-id="@e.EmployeeId" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-eye-fill"></i>
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@e.EmployeeId" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-trash-fill"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
