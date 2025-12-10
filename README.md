@@ -92,12 +92,3 @@ update-database
 
 Correr el proyecto:
 dotnet run
-
-📄 Licencia
-Este proyecto es de uso educativo y portafolio.
-
-👤 Autor
-
-Jervis — Analista de Sistemas / Desarrollador Jr / Data Analyst BI
-LinkedIn: www.linkedin.com/in/jervis-calvo-09b045254
-Email: jervis344.89@gmail.com
