@@ -41,7 +41,16 @@ namespace RHManager.Controllers
         // GET: Employees/Create
         public IActionResult Create()
         {
-            ViewData["PositionId"] = new SelectList(_context.Positions, "PositionId", "Name");
+            var positions = _context.Positions
+                .Include(p => p.Department)
+                .Select(p => new
+                {
+                    p.PositionId,
+                    Name = p.Name + " - " + p.Department!.Name
+                })
+                .ToList();
+
+            ViewData["PositionId"] = new SelectList(positions, "PositionId", "Name");
             return View();
         }
 
@@ -52,7 +61,22 @@ namespace RHManager.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ViewData["PositionId"] = new SelectList(_context.Positions, "PositionId", "Name", employee.PositionId);
+                var positions = _context.Positions
+                    .Include(p => p.Department)
+                    .Select(p => new
+                    {
+                        p.PositionId,
+                        Name = p.Name + " - " + p.Department!.Name
+                    })
+                    .ToList();
+
+                ViewData["PositionId"] = new SelectList(
+                    positions,
+                    "PositionId",
+                    "Name",
+                    employee.PositionId
+                );
+
                 return View(employee);
             }
 
@@ -71,7 +95,22 @@ namespace RHManager.Controllers
             if (employee == null)
                 return NotFound();
 
-            ViewData["PositionId"] = new SelectList(_context.Positions, "PositionId", "Name", employee.PositionId);
+            var positions = _context.Positions
+                .Include(p => p.Department)
+                .Select(p => new
+                {
+                    p.PositionId,
+                    Name = p.Name + " - " + p.Department!.Name
+                })
+                .ToList();
+
+            ViewData["PositionId"] = new SelectList(
+                positions,
+                "PositionId",
+                "Name",
+                employee.PositionId
+            );
+
             return View(employee);
         }
 
@@ -85,7 +124,22 @@ namespace RHManager.Controllers
 
             if (!ModelState.IsValid)
             {
-                ViewData["PositionId"] = new SelectList(_context.Positions, "PositionId", "Name", employee.PositionId);
+                var positions = _context.Positions
+                    .Include(p => p.Department)
+                    .Select(p => new
+                    {
+                        p.PositionId,
+                        Name = p.Name + " - " + p.Department!.Name
+                    })
+                    .ToList();
+
+                ViewData["PositionId"] = new SelectList(
+                    positions,
+                    "PositionId",
+                    "Name",
+                    employee.PositionId
+                );
+
                 return View(employee);
             }
 
