@@ -9,13 +9,12 @@ namespace RHManager.Models
 
         [Required]
         [StringLength(100)]
+        [Display(Name = "Nombre")]
         public string Name { get; set; }
 
         [Required]
         public int DepartmentId { get; set; }
         public Department? Department { get; set; }
-
-        // 👇 ESTA PROPIEDAD ES LA QUE NECESITABA EL DASHBOARD
         public List<Employee> Employees { get; set; } = new();
     }
 }

@@ -81,6 +81,22 @@ namespace RHManager.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: LeaveRequests/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            var req = await _context.LeaveRequests
+                .Include(l => l.Employee)
+                .FirstOrDefaultAsync(l => l.LeaveRequestId == id);
+
+            if (req == null)
+                return NotFound();
+
+            return View(req);
+        }
+
         // GET: LeaveRequests/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {

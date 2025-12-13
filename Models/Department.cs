@@ -9,9 +9,8 @@ namespace RHManager.Models
 
         [Required]
         [StringLength(100)]
+        [Display(Name = "Nombre")]
         public string Name { get; set; }
-
-        // 👇 ESTA ES LA PROPIEDAD QUE FALTABA
         public List<Position> Positions { get; set; } = new();
     }
 }
