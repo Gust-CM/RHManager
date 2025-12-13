@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RHManager.Models;
@@ -18,9 +19,30 @@ namespace RHManager.Controllers
         }
 
         // GET: Employees
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string search, bool? isActive)
         {
             var employees = await _employeeService.GetAllAsync();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var searchLower = search.ToLower();
+
+                employees = employees.Where(e =>
+                    ($"{e.FirstName} {e.LastName}").ToLower().Contains(searchLower) ||
+                    e.Email.ToLower().Contains(searchLower)
+                ).ToList();
+            }
+
+            if (isActive.HasValue)
+            {
+                employees = employees
+                    .Where(e => e.IsActive == isActive.Value)
+                    .ToList();
+            }
+
+            ViewData["Search"] = search;
+            ViewData["IsActive"] = isActive;
+
             return View(employees);
         }
 
@@ -41,7 +63,16 @@ namespace RHManager.Controllers
         // GET: Employees/Create
         public IActionResult Create()
         {
-            ViewData["PositionId"] = new SelectList(_context.Positions, "PositionId", "Name");
+            var positions = _context.Positions
+                .Include(p => p.Department)
+                .Select(p => new
+                {
+                    p.PositionId,
+                    Name = p.Name + " - " + p.Department!.Name
+                })
+                .ToList();
+
+            ViewData["PositionId"] = new SelectList(positions, "PositionId", "Name");
             return View();
         }
 
@@ -52,7 +83,22 @@ namespace RHManager.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ViewData["PositionId"] = new SelectList(_context.Positions, "PositionId", "Name", employee.PositionId);
+                var positions = _context.Positions
+                    .Include(p => p.Department)
+                    .Select(p => new
+                    {
+                        p.PositionId,
+                        Name = p.Name + " - " + p.Department!.Name
+                    })
+                    .ToList();
+
+                ViewData["PositionId"] = new SelectList(
+                    positions,
+                    "PositionId",
+                    "Name",
+                    employee.PositionId
+                );
+
                 return View(employee);
             }
 
@@ -71,7 +117,22 @@ namespace RHManager.Controllers
             if (employee == null)
                 return NotFound();
 
-            ViewData["PositionId"] = new SelectList(_context.Positions, "PositionId", "Name", employee.PositionId);
+            var positions = _context.Positions
+                .Include(p => p.Department)
+                .Select(p => new
+                {
+                    p.PositionId,
+                    Name = p.Name + " - " + p.Department!.Name
+                })
+                .ToList();
+
+            ViewData["PositionId"] = new SelectList(
+                positions,
+                "PositionId",
+                "Name",
+                employee.PositionId
+            );
+
             return View(employee);
         }
 
@@ -85,7 +146,22 @@ namespace RHManager.Controllers
 
             if (!ModelState.IsValid)
             {
-                ViewData["PositionId"] = new SelectList(_context.Positions, "PositionId", "Name", employee.PositionId);
+                var positions = _context.Positions
+                    .Include(p => p.Department)
+                    .Select(p => new
+                    {
+                        p.PositionId,
+                        Name = p.Name + " - " + p.Department!.Name
+                    })
+                    .ToList();
+
+                ViewData["PositionId"] = new SelectList(
+                    positions,
+                    "PositionId",
+                    "Name",
+                    employee.PositionId
+                );
+
                 return View(employee);
             }
 
