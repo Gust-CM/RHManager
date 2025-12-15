@@ -12,6 +12,9 @@
         <i class="bi bi-plus-circle me-1"></i> Nuevo Puesto
     </a>
 </div>
+<p class="text-muted mb-2">
+    Mostrando <strong>@Model.Count()</strong> puestos
+</p>
 
 <table class="table table-custom">
     <thead>
@@ -26,7 +29,12 @@
         {
             <tr>
                 <td>@p.Name</td>
-                <td>@p.Department?.Name</td>
+                <td>
+                    <span class="badge bg-info">
+                        @p.Department?.Name
+                    </span>
+                </td>
+
                 <td class="text-end">
                     <a asp-action="Edit" asp-route-id="@p.PositionId" class="btn btn-sm btn-outline-primary">
                         <i class="bi bi-pencil-fill"></i>
